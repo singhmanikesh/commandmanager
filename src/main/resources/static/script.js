@@ -15,14 +15,14 @@ async function addCommand() {
 async function undoCommand() {
     const res = await fetch(`${baseUrl}/undo`, { method: "DELETE" });
     const text = await res.text();
-    alert(`Undone: ${text}`);
+    showToast(`Undone: ${text}`);
     loadCommands();
 }
 
 async function redoCommand() {
     const res = await fetch(`${baseUrl}/redo`, { method: "DELETE" });
     const text = await res.text();
-    alert(`Redone: ${text}`);
+    showToast(`Redone: ${text}`);
     loadCommands();
 }
 
@@ -41,13 +41,13 @@ async function searchCommand() {
 async function peekUndo() {
     const res = await fetch(`${baseUrl}/peekundo`);
     const text = await res.text();
-    alert(`Top of Undo Stack: ${text}`);
+    showToast(`Top of Undo Stack: ${text}`);
 }
 
 async function peekRedo() {
     const res = await fetch(`${baseUrl}/peekredo`);
     const text = await res.text();
-    alert(`Top of Redo Stack: ${text}`);
+    showToast(`Top of Redo Stack: ${text}`);
 }
 
 async function loadCommands() {
@@ -61,17 +61,24 @@ function displayCommands(commands) {
     list.innerHTML = "";
     if (commands.length === 0) {
         const li = document.createElement("li");
-        li.className = "list-group-item text-muted";
+        li.className = "list-group-item text-muted text-center";
         li.textContent = "No commands found.";
         list.appendChild(li);
         return;
     }
     commands.forEach(cmd => {
         const li = document.createElement("li");
-        li.className = "list-group-item";
-        li.textContent = `${cmd.command} - ${cmd.timestamp}`;
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+            <span>${cmd.command}</span>
+            <small class="text-muted">${new Date(cmd.timestamp).toLocaleString()}</small>
+        `;
         list.appendChild(li);
     });
+}
+
+function showToast(message) {
+    alert(message); // You can later upgrade this to a Bootstrap toast or modal
 }
 
 window.onload = loadCommands;
